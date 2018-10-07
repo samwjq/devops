@@ -26,5 +26,23 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh'
             }
         }
+        stage('upload') {
+           steps {
+              script { 
+                 def server = Artifactory.server 'artifactory1'
+                 def uploadSpec = """{
+                    "files": [{
+                       "pattern": "target/*.jar",
+                       "target": "libs-snapshot-local/"
+                    }]
+                 }"""
+
+                 server.upload(uploadSpec) 
+               }
+            }
+        }
+
+
+
     }
 }
