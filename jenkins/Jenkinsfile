@@ -4,7 +4,6 @@ node {
     def buildInfo
 
     stage ('Artifactory configuration') {
-        rtMaven.tool = CONTAINER_MAVEN_TOOL // Tool name from Jenkins configuration
         rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo:'libs-snapshot-local', server: server
         rtMaven.resolver releaseRepo: 'libs-release', snapshotRepo:'libs-snapshot', server: server
         buildInfo = Artifactory.newBuildInfo()
@@ -12,7 +11,7 @@ node {
 
     stage ('Exec Maven') {
         docker.image('maven:3-alpine').inside {
-            withEnv(['JAVA_HOME=/docker-java-home']) { // Java home of the container
+            withEnv(['JAVA_HOME=/docker-java-home'], 'MAVEN_HOME=/usr/share/maven']) { // Java home of the container
                 rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             }
         }
